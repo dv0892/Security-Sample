@@ -29,41 +29,18 @@ public class Application {
 	 * But URI's like /authenticate or any other request should require authentication
 	 */
 	
-	
-	//@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-		MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
-		http.authorizeHttpRequests((requests) -> requests
-			.requestMatchers(mvcMatcherBuilder.pattern("/"),mvcMatcherBuilder.pattern("/welcome")).permitAll()
-			.anyRequest().authenticated()
-		);
-		return http.build();
-	}
-	
 	@Bean
 	public SecurityFilterChain filterChain( HttpSecurity http , MvcRequestMatcher.Builder mvc) throws Exception {
 		
 		
 		http.csrf(AbstractHttpConfigurer::disable)
 		.authorizeHttpRequests(auth -> 
-			auth.requestMatchers(mvc.pattern("/")).permitAll()
+			auth.requestMatchers(mvc.pattern("/"),mvc.pattern("/welcome")).permitAll()
 			.anyRequest().authenticated()
 			)
 		.formLogin(Customizer.withDefaults())
 		.httpBasic(Customizer.withDefaults());
-		
-		/*
-		 * http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
-		 * .requestMatchers(mvc.pattern("/"),
-		 * mvc.pattern("/welcome")).permitAll().anyRequest().authenticated())
-		 * .formLogin(Customizer.withDefaults());
-		 * 
-		 * http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth -> auth
-		 * .requestMatchers(AntPathRequestMatcher.antMatcher("/"),
-		 * AntPathRequestMatcher.antMatcher("/welcome"))
-		 * .permitAll().anyRequest().authenticated()).formLogin(Customizer.withDefaults(
-		 * )) .httpBasic(Customizer.withDefaults());
-		 */
+
 		return http.build();
 	}
 	
